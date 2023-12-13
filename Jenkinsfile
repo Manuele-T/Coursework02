@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     def commitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                    sh "docker login -u manuelet -p Password@123" // Docker Hub login
+                    sh "docker login -u manuelet -p Manu@@docker1986++" // Docker Hub login
                     sh "docker push manuelet/cw02:${commitHash}" // Push the image
                 }
             }
