@@ -35,7 +35,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Deploy to Kubernetes') { // Last step
             steps {
                 sshagent(['my-ssh-key']) {
                     script {
