@@ -37,11 +37,11 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                script {
-                    def commitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                    sh """
-                      ssh jenkins@172.31.89.25 'kubectl set image deployment/cw02 cw02=manuelet/cw02:${commitHash} --record'
-                    """
+                sshagent(['my-ssh-key']) {
+                    script {
+                        def commitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                        sh "ssh -o StrictHostKeyChecking=no jenkins@172.31.89.25 'kubectl set image deployment/cw02 cw02=manuelet/cw02:${commitHash} --record'"
+                    }
                 }
             }
         }
