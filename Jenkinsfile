@@ -1,45 +1,47 @@
 pipeline {
-    agent any // Use any available agent to run the pipeline
+    agent any
 
     stages {
-        stage('Build Docker Image') { // Build the Docker image 
+        stage('Build Docker Image') {
             steps {
                 script {
-                    def commitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim() // Set the current commit hash as tag
+                    def commitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
                     sh "docker build -t manuelet/cw02:${commitHash} ."
                 }
             }
         }
 
-        stage('Test Container') { // Test the image by running it as a container
+        stage('Test Container') {
             steps {
                 script {
                     def commitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                    sh "docker rm -f test-container || true" // Remove any existing container
+                    sh "docker rm -f test-container || true"
                     sh "docker run -d --name test-container -p 8090:8080 manuelet/cw02:${commitHash}"
-                    sh "sleep 10" // Allow time for the container to start
-                    sh "curl -s http://localhost:8090" // Perform a curl test
-                    sh "docker stop test-container" // Stop the container
-                    sh "docker rm test-container" // Remove the container
+                    sh "sleep 10"
+                    sh "curl -s http://localhost:8090"
+                    sh "docker stop test-container"
+                    sh "docker rm test-container"
                 }
             }
         }
 
-        stage('Push to DockerHub') { // Push the image to DockerHub
+        stage('Push to DockerHub') {
             steps {
                 script {
                     def commitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                    sh "docker login -u manuelet -p Manu@@docker1986++" // Login to Docker Hub
-                    sh "docker push manuelet/cw02:${commitHash}" // Push the image with the commit hash tag
+                    sh "docker login -u manuelet -p Manu@@docker1986++"
+                    sh "docker push manuelet/cw02:${commitHash}"
                 }
             }
         }
 
-        stage('Deploy to Kubernetes') { // Update Kubernetes deployment with the new image
+        stage('Deploy to Kubernetes') {
             steps {
                 script {
                     def commitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                    sh "kubectl set image deployment/cw02 cw02=manuelet/cw02:${commitHash} --record" // Perform a rolling update on the cw02 deployment
+                    sh """
+                      ssh jenkins@54.152.224.104 'kubectl set image deployment/cw02 cw02=manuelet/cw02:${commitHash} --record'
+                    """
                 }
             }
         }
