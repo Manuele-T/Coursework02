@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    environment {
+    environment { // start
         DOCKER_BUILDKIT = "1"
     }
     stages {
