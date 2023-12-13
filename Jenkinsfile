@@ -40,7 +40,7 @@ pipeline {
                 script {
                     def commitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
                     sh """
-                      ssh -o StrictHostKeyChecking=no jenkins@54.152.224.104 'kubectl set image deployment/cw02 cw02=manuelet/cw02:${commitHash} --record'
+                      ssh jenkins@54.152.224.104 'kubectl set image deployment/cw02 cw02=manuelet/cw02:${commitHash} --record'
                     """
                 }
             }
