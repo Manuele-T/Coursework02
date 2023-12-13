@@ -15,7 +15,9 @@ pipeline {
             steps {
                 script {
                     def commitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                    sh "docker run -d --name test-container -p 8090:8080 manuelet/cw02:${commitHash}"
+                    // Remove any existing container with the same name
+                    sh "docker rm -f test-container || true"
+		    sh "docker run -d --name test-container -p 8090:8080 manuelet/cw02:${commitHash}"
                     // Wait for 10 seconds
                     sh "sleep 10" 
                     // Curl command – build test
