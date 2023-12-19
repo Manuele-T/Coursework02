@@ -46,7 +46,7 @@ pipeline {
                     script {
                         def commitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
                         // Deploy to Kubernetes using kubectl via SSH
-                        sh "ssh -o StrictHostKeyChecking=no ubuntu@44.202.107.13 'kubectl set image deployment/cw02 cw02=manuelet/cw02:${commitHash} --record'"
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@18.234.227.166 'kubectl set image deployment/cw02 cw02=manuelet/cw02:${commitHash} --record'"
                     }
                 }
             }
